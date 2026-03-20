@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 40% 16%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 40% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 40% 16%;
+
+    --primary: 245 55% 28%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 200 60% 96%;
+    --secondary-foreground: 245 55% 28%;
+
+    --muted: 210 30% 96%;
+    --muted-foreground: 220 15% 45%;
+
+    --accent: 48 100% 62%;
+    --accent-foreground: 240 40% 16%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 245 55% 28%;
+
+    --radius: 0.5rem;
+
+    --sky: 195 85% 70%;
+    --sky-foreground: 240 40% 16%;
+    --periwinkle: 245 70% 62%;
+    --periwinkle-foreground: 0 0% 100%;
+
+    --topbar: 245 55% 22%;
+    --topbar-foreground: 0 0% 100%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 40% 16%;
+    --sidebar-primary: 245 55% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 200 60% 96%;
+    --sidebar-accent-foreground: 240 40% 16%;
+    --sidebar-border: 220 20% 90%;
+    --sidebar-ring: 245 55% 28%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card border border-border shadow-sm;
+  }
+  .glass-strong {
+    @apply bg-card/95 backdrop-blur-xl border-b border-border shadow-sm;
+  }
+  .glow-border {
+    box-shadow: 0 4px 20px -5px hsl(var(--primary) / 0.15);
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--periwinkle)));
+  }
+  .gradient-accent {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--periwinkle)));
+  }
+  .gradient-warm {
+    background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--sky)));
+  }
+  .section-alt {
+    background: hsl(var(--secondary));
+  }
+  .section-sky {
+    background: linear-gradient(180deg, hsl(var(--sky) / 0.08), hsl(var(--background)));
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 15px -5px hsl(var(--accent) / 0.3); }
+  50% { box-shadow: 0 4px 30px -5px hsl(var(--accent) / 0.6); }
+}
