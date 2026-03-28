@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
 
 const BlogCard = ({ blog }: any) => {
-
   return (
-
     <Link to={`/blog/${blog.slug}`}>
-
       <div className="bg-background border rounded-2xl p-5 hover:shadow-lg transition">
-
+        
         <span className="text-xs text-primary font-medium">
           {blog.category}
         </span>
@@ -21,11 +18,8 @@ const BlogCard = ({ blog }: any) => {
         </p>
 
       </div>
-
     </Link>
-
   );
-
 };
 
 export default BlogCard;

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import API_BASE from "../../config/api";
 
 interface Category {
@@ -7,165 +9,223 @@ interface Category {
   name: string;
 }
 
-const CreateBlog = () => {
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "code-block"],
+    ["link", "image"],
+    [{ align: [] }],
+    ["clean"],
+  ],
+};
 
+const quillFormats = [
+  "header", "bold", "italic", "underline", "strike",
+  "list", "bullet", "blockquote", "code-block",
+  "link", "image", "align",
+];
+
+const CreateBlog = () => {
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
-  const [metaTitle, setMetaTitle] = useState("");
+  const [title, setTitle]               = useState("");
+  const [slug, setSlug]                 = useState("");
+  const [content, setContent]           = useState("");
+  const [category, setCategory]         = useState("");
+  const [status, setStatus]             = useState("draft");
+  const [metaTitle, setMetaTitle]       = useState("");
   const [metaDescription, setMetaDescription] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [image, setImage]               = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [categories, setCategories]     = useState<Category[]>([]);
+  const [loading, setLoading]           = useState(false);
+  const [htmlMode, setHtmlMode]         = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE}/categories`)
-      .then(res => res.json())
-      .then(data => setCategories(data));
+      .then((r) => r.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : data.data || []));
   }, []);
 
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w-]+/g, "");
-  };
+  const generateSlug = (text: string) =>
+    text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, "");
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setTitle(value);
-    setSlug(generateSlug(value));
+    setTitle(e.target.value);
+    setSlug(generateSlug(e.target.value));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImage(file);
+    if (file) setImagePreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoading(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("slug", slug);
     formData.append("content", content);
     formData.append("category_id", category);
+    formData.append("status", status);
     formData.append("meta_title", metaTitle);
     formData.append("meta_description", metaDescription);
-    if (image) {
-      formData.append("featured_image", image);
-    }
-
-    await fetch(`${API_BASE}/blogs`, {
-      method: "POST",
-      body: formData
-    });
-
-    alert("Blog Created Successfully");
+    if (image) formData.append("featured_image", image);
+    await fetch(`${API_BASE}/blogs`, { method: "POST", body: formData });
+    setLoading(false);
     navigate("/admin/blogs");
   };
 
+  const inputClass = "w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-3xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Create Blog</h1>
+        <p className="text-sm text-gray-500 mt-1">Write and publish a new blog post</p>
+      </div>
 
-      <h1 className="text-2xl font-bold mb-6">
-        Create Blog
-      </h1>
+      <form onSubmit={handleSubmit} className="space-y-5">
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow space-y-4"
-      >
-
-        {/* Title */}
-        <div>
-          <label className="block mb-1 font-medium">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={handleTitleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+        {/* ── BASIC INFO ── */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Basic Info</h2>
+          <div>
+            <label className={labelClass}>Title *</label>
+            <input type="text" value={title} onChange={handleTitleChange} className={inputClass} required />
+          </div>
+          <div>
+            <label className={labelClass}>Slug</label>
+            <div className="flex items-center">
+              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-2.5 rounded-l-lg border border-r-0 border-gray-200">/blog/</span>
+              <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)}
+                className="flex-1 border border-gray-200 rounded-r-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
         </div>
 
-        {/* Slug */}
-        <div>
-          <label className="block mb-1 font-medium">Slug</label>
-          <input
-            type="text"
-            value={slug}
-            readOnly
-            className="w-full border p-2 rounded bg-gray-100"
-          />
+        {/* ── SETTINGS ── */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Settings</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Category</label>
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Status</label>
+              <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputClass}>
+                <option value="draft">Draft</option>
+                <option value="publish">Published</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        {/* Category */}
-        <div>
-          <label className="block mb-1 font-medium">Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+        {/* ── FEATURED IMAGE ── */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Featured Image</h2>
+          {imagePreview ? (
+            <div className="relative">
+              <img src={imagePreview} alt="Preview" className="w-full h-52 object-cover rounded-lg border border-gray-200" />
+              <button type="button" onClick={() => { setImage(null); setImagePreview(null); }}
+                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2.5 py-1 rounded-lg">
+                Remove
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
+              <span className="text-3xl text-gray-300 mb-2">↑</span>
+              <span className="text-sm text-gray-500">Click to upload image</span>
+              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+            </label>
+          )}
         </div>
 
-        {/* Featured Image */}
-        <div>
-          <label className="block mb-1 font-medium">Featured Image</label>
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files?.[0] || null)}
-            className="w-full border p-2 rounded"
-          />
+        {/* ── CONTENT ── */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Content *</h2>
+            {/* HTML TOGGLE BUTTON */}
+            <button
+              type="button"
+              onClick={() => setHtmlMode(!htmlMode)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                htmlMode
+                  ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                  : "bg-gray-100 text-gray-600 border-gray-200 hover:border-orange-400 hover:text-orange-500"
+              }`}
+            >
+              <span className="font-mono">&lt;/&gt;</span>
+              {htmlMode ? "Visual Editor" : "HTML Source"}
+            </button>
+          </div>
+
+          {htmlMode ? (
+            /* HTML SOURCE MODE — dark code editor style */
+            <div>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={18}
+                placeholder="Paste your HTML code here (from WordPress or any source)..."
+                className="w-full border border-orange-200 rounded-lg p-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400 bg-[#1e1e1e] text-[#d4d4d4] leading-6 resize-y"
+                spellCheck={false}
+              />
+              <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                <span>💡</span>
+                WordPress se HTML copy karo → yahan paste karo → "Visual Editor" click karo to preview dekho
+              </p>
+            </div>
+          ) : (
+            /* VISUAL RICH TEXT EDITOR */
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={quillModules}
+              formats={quillFormats}
+              style={{ minHeight: "300px" }}
+            />
+          )}
         </div>
 
-        {/* Content */}
-        <div>
-          <label className="block mb-1 font-medium">Content</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={8}
-            className="w-full border p-2 rounded"
-            required
-          />
+        {/* ── SEO ── */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">SEO</h2>
+          <div>
+            <label className={labelClass}>Meta Title</label>
+            <input type="text" value={metaTitle} onChange={(e) => setMetaTitle(e.target.value)} className={inputClass} maxLength={60} />
+            <p className="text-xs text-gray-400 mt-1">{metaTitle.length}/60</p>
+          </div>
+          <div>
+            <label className={labelClass}>Meta Description</label>
+            <textarea value={metaDescription} onChange={(e) => setMetaDescription(e.target.value)} rows={3} className={inputClass} maxLength={160} />
+            <p className="text-xs text-gray-400 mt-1">{metaDescription.length}/160</p>
+          </div>
         </div>
 
-        {/* Meta Title */}
-        <div>
-          <label className="block mb-1 font-medium">Meta Title (SEO)</label>
-          <input
-            type="text"
-            value={metaTitle}
-            onChange={(e) => setMetaTitle(e.target.value)}
-            className="w-full border p-2 rounded"
-          />
+        {/* ── BUTTONS ── */}
+        <div className="flex gap-3 pb-8">
+          <button type="submit" disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors">
+            {loading ? "Publishing..." : "Publish Blog"}
+          </button>
+          <button type="button" onClick={() => navigate("/admin/blogs")}
+            className="border border-gray-300 text-gray-600 px-6 py-2.5 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
         </div>
-
-        {/* Meta Description */}
-        <div>
-          <label className="block mb-1 font-medium">Meta Description (SEO)</label>
-          <textarea
-            value={metaDescription}
-            onChange={(e) => setMetaDescription(e.target.value)}
-            rows={3}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
-        >
-          Publish Blog
-        </button>
 
       </form>
     </div>

@@ -1,27 +1,48 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import API_BASE from "../../config/api";
+
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "code-block"],
+    ["link", "image"],
+    [{ align: [] }],
+    ["clean"],
+  ],
+};
+
+const quillFormats = [
+  "header", "bold", "italic", "underline", "strike",
+  "list", "bullet", "blockquote", "code-block",
+  "link", "image", "align",
+];
 
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
-  const [status, setStatus] = useState("draft");
-  const [metaTitle, setMetaTitle] = useState("");
+  const [title, setTitle]               = useState("");
+  const [slug, setSlug]                 = useState("");
+  const [content, setContent]           = useState("");
+  const [category, setCategory]         = useState("");
+  const [status, setStatus]             = useState("draft");
+  const [metaTitle, setMetaTitle]       = useState("");
   const [metaDescription, setMetaDescription] = useState("");
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage]               = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [categories, setCategories]     = useState<any[]>([]);
+  const [loading, setLoading]           = useState(false);
+  const [htmlMode, setHtmlMode]         = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE}/categories`)
       .then((r) => r.json())
-      .then(setCategories);
+      .then((data) => setCategories(Array.isArray(data) ? data : data.data || []));
 
     fetch(`${API_BASE}/blogs/${id}`)
       .then((r) => r.json())
@@ -33,9 +54,7 @@ const EditBlog = () => {
         setStatus(data.status || "draft");
         setMetaTitle(data.meta_title || "");
         setMetaDescription(data.meta_description || "");
-        if (data.featured_image) {
-          setImagePreview(`http://localhost:8080/${data.featured_image}`);
-        }
+        if (data.featured_image) setImagePreview(data.featured_image);
       });
   }, [id]);
 
@@ -74,6 +93,7 @@ const EditBlog = () => {
 
       <form onSubmit={updateBlog} className="space-y-5">
 
+        {/* ── BASIC INFO ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Basic Info</h2>
           <div>
@@ -90,6 +110,7 @@ const EditBlog = () => {
           </div>
         </div>
 
+        {/* ── SETTINGS ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Settings</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -112,28 +133,75 @@ const EditBlog = () => {
           </div>
         </div>
 
+        {/* ── FEATURED IMAGE ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Featured Image</h2>
           {imagePreview ? (
             <div className="relative">
               <img src={imagePreview} alt="Preview" className="w-full h-52 object-cover rounded-lg border border-gray-200" />
               <button type="button" onClick={() => { setImage(null); setImagePreview(null); }}
-                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2.5 py-1 rounded-lg">Remove</button>
+                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2.5 py-1 rounded-lg">
+                Remove
+              </button>
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
-              <span className="text-2xl text-gray-300 mb-2">↑</span>
+              <span className="text-3xl text-gray-300 mb-2">↑</span>
               <span className="text-sm text-gray-500">Click to upload image</span>
               <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>
           )}
         </div>
 
+        {/* ── CONTENT ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Content</h2>
-          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={10} className={inputClass} required />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Content *</h2>
+            {/* HTML TOGGLE BUTTON */}
+            <button
+              type="button"
+              onClick={() => setHtmlMode(!htmlMode)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                htmlMode
+                  ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                  : "bg-gray-100 text-gray-600 border-gray-200 hover:border-orange-400 hover:text-orange-500"
+              }`}
+            >
+              <span className="font-mono">&lt;/&gt;</span>
+              {htmlMode ? "Visual Editor" : "HTML Source"}
+            </button>
+          </div>
+
+          {htmlMode ? (
+            /* HTML SOURCE MODE */
+            <div>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={18}
+                placeholder="Paste your HTML code here (from WordPress or any source)..."
+                className="w-full border border-orange-200 rounded-lg p-4 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400 bg-[#1e1e1e] text-[#d4d4d4] leading-6 resize-y"
+                spellCheck={false}
+              />
+              <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                <span>💡</span>
+                WordPress se HTML copy karo → yahan paste karo → "Visual Editor" click karo to preview dekho
+              </p>
+            </div>
+          ) : (
+            /* VISUAL RICH TEXT EDITOR */
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={quillModules}
+              formats={quillFormats}
+              style={{ minHeight: "300px" }}
+            />
+          )}
         </div>
 
+        {/* ── SEO ── */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">SEO</h2>
           <div>
@@ -148,6 +216,7 @@ const EditBlog = () => {
           </div>
         </div>
 
+        {/* ── BUTTONS ── */}
         <div className="flex gap-3 pb-8">
           <button type="submit" disabled={loading}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors">
@@ -158,6 +227,7 @@ const EditBlog = () => {
             Cancel
           </button>
         </div>
+
       </form>
     </div>
   );

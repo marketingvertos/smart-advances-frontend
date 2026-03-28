@@ -5,190 +5,100 @@ const stacks = [
   {
     icon: Brain,
     title: "AI Stack",
+    gradient: "from-[#0B2C5F] to-[#1E5EFF]",
     tools: [
-      {
-        name: "OpenAI",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg",
-      },
-      {
-        name: "Claude AI",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg",
-      },
-      {
-        name: "Gemini",
-        logo: "https://pawantripathi.in/wp-content/uploads/2026/01/10-150x150.png",
-        logoHeight: "34px",
-      },
+      { name: "ChatGPT",  emoji: "🤖", color: "text-[#10a37f]",  bg: "bg-[#10a37f]/8" },
+      { name: "Claude",   emoji: "✦",  color: "text-[#c17f3e]",  bg: "bg-[#c17f3e]/8" },
+      { name: "Gemini",   emoji: "✦",  color: "text-[#1E5EFF]",  bg: "bg-[#1E5EFF]/8" },
     ],
-    gradient: "from-indigo-500 to-purple-500",
   },
   {
     icon: Cog,
     title: "Automation Stack",
+    gradient: "from-[#1E5EFF] to-[#60A5FA]",
     tools: [
-      {
-        name: "N8N",
-        logo: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/n8n-icon.svg",
-        logoHeight: "28px",
-      },
-      {
-        name: "Make",
-        logo: "https://cdn.worldvectorlogo.com/logos/make-logo-rgb-3.svg",
-      },
-      {
-        name: "Zapier",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Zapier_logo.svg",
-      },
+      { name: "n8n",    emoji: "⚡", color: "text-[#ea4b71]",  bg: "bg-[#ea4b71]/8" },
+      { name: "Make",   emoji: "◆",  color: "text-[#6d00cc]",  bg: "bg-[#6d00cc]/8" },
+      { name: "Zapier", emoji: "⚡", color: "text-[#ff4a00]",  bg: "bg-[#ff4a00]/8" },
     ],
-    gradient: "from-sky-500 to-cyan-500",
   },
   {
     icon: BarChart3,
     title: "Marketing Stack",
+    gradient: "from-[#0B2C5F] to-[#1E5EFF]",
     tools: [
-      {
-        name: "HubSpot",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg",
-      },
-      {
-        name: "Google Ads",
-        logo: "https://www.vectorlogo.zone/logos/google_ads/google_ads-ar21.svg",
-        logoHeight: "32px",
-      },
-      {
-        name: "Meta Ads",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg",
-      },
+      { name: "HubSpot",    emoji: "🔶", color: "text-[#ff7a59]",  bg: "bg-[#ff7a59]/8" },
+      { name: "Google Ads", emoji: "◆",  color: "text-[#4285F4]",  bg: "bg-[#4285F4]/8" },
+      { name: "Meta Ads",   emoji: "◆",  color: "text-[#1877F2]",  bg: "bg-[#1877F2]/8" },
     ],
-    gradient: "from-orange-500 to-pink-500",
   },
 ];
 
-const container = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const card = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0 },
-};
-
-const ToolRow = ({
-  tool,
-}: {
-  tool: { name: string; logo: string; logoHeight?: string };
-}) => {
-  return (
-    <div className="bg-secondary rounded-xl py-3 px-6 flex items-center justify-center min-h-[56px] hover:bg-muted transition">
-      <img
-        src={tool.logo}
-        alt={tool.name}
-        style={{
-          height: tool.logoHeight ?? "24px",
-          width: "auto",
-          maxWidth: "140px",
-          objectFit: "contain",
-        }}
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.style.display = "none";
-          const parent = target.parentNode as HTMLElement | null;
-          if (parent && !parent.querySelector("span")) {
-            const span = document.createElement("span");
-            span.textContent = tool.name;
-            span.style.cssText =
-              "font-size:13px;font-weight:600;color:#64748b;";
-            parent.appendChild(span);
-          }
-        }}
-      />
-    </div>
-  );
-};
-
 const TechStackSection = () => {
   return (
-    <section id="techstack" className="py-24 bg-background">
+    <section id="techstack" className="py-16 md:py-24 bg-[#F4F7FB]">
       <div className="max-w-7xl mx-auto px-4">
 
-        {/* Section Header */}
-
+        {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-1.5 mb-4">
-            <span className="text-sm font-semibold text-primary">
-              Technology
-            </span>
+          <div className="inline-flex items-center gap-2 bg-[#1E5EFF]/10 border border-[#1E5EFF]/20 rounded-full px-4 py-1.5 mb-4">
+            <span className="text-sm font-semibold text-[#1E5EFF]">Technology</span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#0F172A]">
             Our Tech Stack
           </h2>
 
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            We leverage cutting-edge AI, automation and marketing platforms
-            to scale growth and build powerful marketing ecosystems.
+          <p className="text-[#6B7280] text-lg max-w-2xl mx-auto">
+            We leverage cutting-edge AI, automation and marketing platforms to
+            scale growth and build powerful marketing ecosystems.
           </p>
         </motion.div>
 
-        {/* Stack Grid */}
-
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto"
-        >
-
-          {stacks.map((stack) => (
-
+        {/* CARDS */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {stacks.map((stack, i) => (
             <motion.div
               key={stack.title}
-              variants={card}
-              className="group bg-background rounded-2xl p-8 text-center border border-border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group bg-white rounded-2xl p-7 text-center border border-[#E2E8F0] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-
-              {/* Icon */}
-
-              <div
-                className={`bg-gradient-to-r ${stack.gradient} rounded-2xl p-4 w-fit mx-auto mb-6`}
-              >
-                <stack.icon className="h-8 w-8 text-white" />
+              {/* ICON */}
+              <div className={`bg-gradient-to-br ${stack.gradient} rounded-2xl p-4 w-14 h-14 mx-auto mb-4 flex items-center justify-center`}>
+                <stack.icon className="h-7 w-7 text-white" />
               </div>
 
-              {/* Title */}
-
-              <h3 className="text-xl font-semibold mb-6 text-foreground">
+              {/* TITLE */}
+              <h3 className="text-lg font-semibold mb-5 text-[#0F172A]">
                 {stack.title}
               </h3>
 
-              {/* Tools */}
-
+              {/* TOOL ROWS */}
               <div className="space-y-3">
                 {stack.tools.map((tool) => (
-                  <ToolRow key={tool.name} tool={tool} />
+                  <div
+                    key={tool.name}
+                    className="bg-[#F4F7FB] border border-[#E2E8F0] rounded-xl h-[52px] flex items-center justify-center px-5 hover:border-[#1E5EFF]/30 hover:bg-white hover:shadow-sm transition-all duration-200 group/tool"
+                  >
+                    <span className={`font-semibold text-base ${tool.color} group-hover/tool:scale-105 transition-transform`}>
+                      {tool.name}
+                    </span>
+                  </div>
                 ))}
               </div>
 
-              {/* Hover Glow */}
-
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition pointer-events-none bg-gradient-to-r from-primary/5 to-transparent" />
-
             </motion.div>
-
           ))}
+        </div>
 
-        </motion.div>
       </div>
     </section>
   );

@@ -1,4 +1,20 @@
+import { useEffect, useState } from "react";
+import API_BASE from "@/config/api";
+
 const Dashboard = () => {
+
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/dashboard`)
+      .then(res => res.json())
+      .then(res => {
+        console.log("API DATA:", res);
+        setData(res);
+      })
+      .catch(err => console.log(err));
+  }, []);
+
   return (
     <div>
 
@@ -8,17 +24,23 @@ const Dashboard = () => {
 
         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
           <p className="text-gray-500 text-sm">Total Leads</p>
-          <h3 className="text-2xl font-bold mt-2">3</h3>
+          <h3 className="text-2xl font-bold mt-2">
+            {data ? data.total_leads : "Loading..."}
+          </h3>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
           <p className="text-gray-500 text-sm">Blogs</p>
-          <h3 className="text-2xl font-bold mt-2">2</h3>
+          <h3 className="text-2xl font-bold mt-2">
+            {data ? data.total_blogs : "Loading..."}
+          </h3>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition">
           <p className="text-gray-500 text-sm">Categories</p>
-          <h3 className="text-2xl font-bold mt-2">3</h3>
+          <h3 className="text-2xl font-bold mt-2">
+            {data ? data.total_categories : "Loading..."}
+          </h3>
         </div>
 
       </div>

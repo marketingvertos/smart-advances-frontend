@@ -1,3 +1,3 @@
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = "https://royalblue-ibis-588192.hostingersite.com/api";
 
 export default API_BASE;

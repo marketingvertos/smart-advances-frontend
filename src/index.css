@@ -4,52 +4,61 @@
 
 @layer base {
   :root {
+    /* ── BRAND COLORS ── */
+    /* Dark Blue  #0B2C5F → hsl(214, 72%, 21%) */
+    /* Royal Blue #1E5EFF → hsl(224, 100%, 56%) */
+    /* Light BG   #F4F7FB → hsl(213, 33%, 96%) */
+    /* Text Dark  #0F172A → hsl(222, 47%, 11%) */
+    /* Text Gray  #6B7280 → hsl(220, 9%, 46%)  */
+
     --background: 0 0% 100%;
-    --foreground: 240 40% 16%;
+    --foreground: 222 47% 11%;        /* #0F172A */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 40% 16%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 40% 16%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 245 55% 28%;
+    --primary: 224 100% 56%;          /* #1E5EFF — Royal Blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 60% 96%;
-    --secondary-foreground: 245 55% 28%;
+    --secondary: 213 33% 96%;         /* #F4F7FB — Light Blue BG */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 30% 96%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 213 33% 96%;             /* #F4F7FB */
+    --muted-foreground: 220 9% 46%;   /* #6B7280 */
 
-    --accent: 48 100% 62%;
-    --accent-foreground: 240 40% 16%;
+    --accent: 224 100% 56%;           /* #1E5EFF — same as primary */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 90%;
-    --input: 220 20% 90%;
-    --ring: 245 55% 28%;
+    --border: 213 25% 88%;
+    --input: 213 25% 88%;
+    --ring: 224 100% 56%;             /* #1E5EFF */
 
     --radius: 0.5rem;
 
-    --sky: 195 85% 70%;
-    --sky-foreground: 240 40% 16%;
-    --periwinkle: 245 70% 62%;
-    --periwinkle-foreground: 0 0% 100%;
+    /* Custom tokens */
+    --sky: 224 100% 56%;          /* #1E5EFF — Royal Blue (was light blue) */
+--sky-foreground: 0 0% 100%;  /* White text on blue */
 
-    --topbar: 245 55% 22%;
+--periwinkle: 224 100% 56%;   /* #1E5EFF — same Royal Blue */
+--periwinkle-foreground: 0 0% 100%;
+
+    --topbar: 214 72% 21%;            /* #0B2C5F — Dark Blue */
     --topbar-foreground: 0 0% 100%;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 40% 16%;
-    --sidebar-primary: 245 55% 28%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 224 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 200 60% 96%;
-    --sidebar-accent-foreground: 240 40% 16%;
-    --sidebar-border: 220 20% 90%;
-    --sidebar-ring: 245 55% 28%;
+    --sidebar-accent: 213 33% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 213 25% 88%;
+    --sidebar-ring: 224 100% 56%;
   }
 }
 
@@ -70,31 +79,51 @@
     @apply bg-card/95 backdrop-blur-xl border-b border-border shadow-sm;
   }
   .glow-border {
-    box-shadow: 0 4px 20px -5px hsl(var(--primary) / 0.15);
+    box-shadow: 0 4px 20px -5px hsl(var(--primary) / 0.2);
   }
+
+  /* Royal Blue → Dark Blue gradient */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--periwinkle)));
+    background-image: linear-gradient(
+      135deg,
+      hsl(224 100% 56%),   /* #1E5EFF */
+      hsl(214 72% 21%)      /* #0B2C5F */
+    );
   }
+
+  /* Footer / dark sections */
   .gradient-accent {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--periwinkle)));
+    background: hsl(214 72% 21%);     /* #0B2C5F solid */
   }
-  .gradient-warm {
-    background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--sky)));
-  }
+
+  /* Subtle light sections */
   .section-alt {
-    background: hsl(var(--secondary));
+    background: hsl(213 33% 96%);     /* #F4F7FB */
   }
   .section-sky {
-    background: linear-gradient(180deg, hsl(var(--sky) / 0.08), hsl(var(--background)));
+    background: linear-gradient(
+      180deg,
+      hsl(213 33% 96% / 0.6),         /* #F4F7FB fade */
+      hsl(0 0% 100%)                  /* white */
+    );
+  }
+
+  /* Primary CTA button glow */
+  .btn-glow {
+    box-shadow: 0 4px 20px -4px hsl(224 100% 56% / 0.4);
+  }
+  .btn-glow:hover {
+    box-shadow: 0 6px 28px -4px hsl(224 100% 56% / 0.55);
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50%       { transform: translateY(-10px); }
 }
+
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 4px 15px -5px hsl(var(--accent) / 0.3); }
-  50% { box-shadow: 0 4px 30px -5px hsl(var(--accent) / 0.6); }
+  0%, 100% { box-shadow: 0 4px 15px -5px hsl(224 100% 56% / 0.3); }
+  50%       { box-shadow: 0 4px 30px -5px hsl(224 100% 56% / 0.55); }
 }

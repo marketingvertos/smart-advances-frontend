@@ -61,6 +61,7 @@ function App() {
 
             {/* ADMIN LOGIN */}
             <Route path="/admin/login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
 
             {/* ADMIN PANEL */}
             <Route path="/admin" element={<AdminLayout />}>
